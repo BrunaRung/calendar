@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Task and Class Scheduler</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> 
+
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+
+
+</head>
+<body>
+
+    <!-- Calendar Container -->
+    <div class="main_grid" style="display: flex; padding: 10px; column-gap: 10px; height: 100vh;"> 
+        <div id='calendar' style="width: 70%; height: 100%;"></div> 
+        <div class="list_grid" style="width: 30%;">
+            <h2>Tasks & Classes</h2>
+            
+            <!-- Tasks Section -->
+            <h3>Tasks</h3>
+            <ul id="task-list"></ul>
+            
+            <!-- Classes Section -->
+            <h3>Classes</h3>
+            <ul id="class-list"></ul>
+            
+            <!-- Action Buttons -->
+            <button class="btn" onclick="openTaskModal()">Add Task</button>
+            <button class="btn" onclick="openClassModal()">Add Class</button>
+            <button class="btn" onclick="openSubjectModal()">Manage Subjects</button>
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTaskModal()">&times;</span>
+            <h2>Add New Task</h2>
+            <form id="taskForm" action="/add-task" method="POST">
+                <div class="form-group">
+                    <label for="taskTitle">Task Title:</label>
+                    <input type="text" id="taskTitle" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskSubject">Subject:</label>
+                    <select id="taskSubject" name="subject" required>
+                        <option value="">Select Subject</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskDate">Due Date:</label>
+                    <input type="date" id="taskDate" name="date" required>
+                </div>
+                <button type="submit" class="submit-btn">Add Task</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Class Modal -->
+    <div id="classModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeClassModal()">&times;</span>
+            <h2>Add New Class</h2>
+            <form id="classForm" action="/add-class" method="POST">
+                <div class="form-group">
+                    <label for="classSubject">Subject Name:</label>
+                    <select id="classSubject" name="subject" required>
+                        <option value="" style="font-family: Playfair Display;">Select Subject</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="classDay">Day of Week:</label>
+                    <select id="classDay" name="day" required>
+                        <option value="">Select Day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="classStartTime">Start Time:</label>
+                    <input type="time" id="classStartTime" name="start_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="classEndTime">End Time:</label>
+                    <input type="time" id="classEndTime" name="end_time" required>
+                </div>
+                <button type="submit" class="submit-btn">Add Class</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Subject Modal -->
+    <div id="subjectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSubjectModal()">&times;</span>
+            <h2>Manage Subjects</h2>
+            <div id="subject-list" style="margin-bottom: 20px;"></div>
+            <h3>Add New Subject</h3>
+            <form id="subjectForm">
+                <div class="form-group">
+                    <label for="subjectName">Subject Name:</label>
+                    <input type="text" id="subjectName" required>
+                </div>
+                <div class="form-group">
+                    <label for="subjectColor">Color:</label>
+                    <input type="color" id="subjectColor" value="#FF5733">
+                </div>
+                <button type="button" class="submit-btn" onclick="addSubject()">Add Subject</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FullCalendar JavaScript -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+
+    <!-- Initialize FullCalendar and App Logic -->
+    <script>
+        let calendar;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                height: 'auto',
+                slotMinTime: '07:00:00',
+                slotMaxTime: '22:00:00',
+                allDaySlot: true,
+                nowIndicator: true,
+                weekends: true,
+                eventSources: [
+                    {
+                        url: '/get-events',
+                        method: 'GET',
+                        failure: function() {
+                            alert('There was an error while fetching events!');
+                        }
+                    }
+                ],
+                eventClick: function(info) {
+                    if (confirm('Delete this ' + info.event.extendedProps.type + '?')) {
+                        deleteEvent(info.event.id, info.event.extendedProps.type);
+                    }
+                },
+                eventDidMount: function(info) {
+                    // Color events based on subject
+                    if (info.event.extendedProps.subject) {
+                        fetch('/get-subjects')
+                            .then(response => response.json())
+                            .then(subjects => {
+                                const subject = info.event.extendedProps.subject;
+                                if (subjects[subject]) {
+                                    info.el.style.backgroundColor = subjects[subject].color;
+                                    info.el.style.borderColor = subjects[subject].color;
+                                }
+                            });
+                    }
+                }
+            });
+
+            // Render the calendar
+            calendar.render();
+            
+            // Load tasks, classes, and subjects
+            loadTasksAndClasses();
+            loadSubjects();
+        });
+
+        function loadTasksAndClasses() {
+            fetch('/get-events')
+                .then(response => response.json())
+                .then(events => {
+                    const taskList = document.getElementById('task-list');
+                    const classList = document.getElementById('class-list');
+                    
+                    taskList.innerHTML = '';
+                    classList.innerHTML = '';
+                    
+                    events.forEach(event => {
+                        if (event.type === 'task') {
+                            const li = document.createElement('li');
+                            li.innerHTML = `
+                                <div class="task-info">
+                                    <div><strong>${event.title}</strong></div>
+                                    <div class="task-subject">
+                                        <div style="display: inline-block; width: 12px; height: 12px; background-color: ${event.backgroundColor}; border-radius: 2px; margin-right: 5px;"></div>
+                                        ${event.subject || 'No subject'}
+                                    </div>
+                                    <div style="font-size: 0.8em; color: #888;">${event.start}</div>
+                                </div>
+                                <button class="delete-btn" onclick="deleteEvent('${event.id}', 'task')">×</button>
+                            `;
+                            taskList.appendChild(li);
+                        } else if (event.type === 'class') {
+                            const li = document.createElement('li');
+                            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                            const dayName = event.day || dayNames[event.daysOfWeek[0]];
+                            li.innerHTML = `
+                                <div class="task-info">
+                                    <div><strong>${event.subject}</strong></div>
+                                    <div class="task-subject">
+                                        <div style="display: inline-block; width: 12px; height: 12px; background-color: ${event.backgroundColor}; border-radius: 2px; margin-right: 5px;"></div>
+                                        ${dayName} ${event.startTime} - ${event.endTime}
+                                    </div>
+                                </div>
+                                <button class="delete-btn" onclick="deleteEvent('${event.id}', 'class')">×</button>
+                            `;
+                            classList.appendChild(li);
+                        }
+                    });
+                })
+                .catch(error => console.error('Error loading events:', error));
+        }
+
+        function loadSubjects() {
+            fetch('/get-subjects')
+                .then(response => response.json())
+                .then(subjects => {
+                    const subjectList = document.getElementById('subject-list');
+                    subjectList.innerHTML = '<h3>Current Subjects</h3>';
+                    
+                    for (const [name, info] of Object.entries(subjects)) {
+                        const div = document.createElement('div');
+                        div.className = 'subject-item';
+                        div.innerHTML = `
+                            <div class="subject-color-preview" style="background-color: ${info.color};"></div>
+                            <div class="subject-item-name">${name}</div>
+                            <button class="delete-btn" onclick="deleteSubject('${name}')">×</button>
+                        `;
+                        subjectList.appendChild(div);
+                    }
+                    
+                    // Populate subject dropdowns
+                    const taskSubjectDropdown = document.getElementById('taskSubject');
+                    const classSubjectDropdown = document.getElementById('classSubject');
+                    
+                    // Clear existing options except the first one
+                    while (taskSubjectDropdown.options.length > 1) {
+                        taskSubjectDropdown.remove(1);
+                    }
+                    while (classSubjectDropdown.options.length > 1) {
+                        classSubjectDropdown.remove(1);
+                    }
+                    
+                    // Add new options
+                    for (const [name, info] of Object.entries(subjects)) {
+                        const option1 = document.createElement('option');
+                        option1.value = name;
+                        option1.textContent = name;
+                        taskSubjectDropdown.appendChild(option1);
+                        
+                        const option2 = document.createElement('option');
+                        option2.value = name;
+                        option2.textContent = name;
+                        classSubjectDropdown.appendChild(option2);
+                    }
+                });
+        }
+
+        function deleteEvent(eventId, eventType) {
+            const url = eventType === 'task' ? `/delete-task/${eventId}` : `/delete-class/${eventId}`;
+            
+            fetch(url, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        calendar.refetchEvents();
+                        loadTasksAndClasses();
+                    }
+                })
+                .catch(error => console.error('Error deleting event:', error));
+        }
+
+        function deleteSubject(subjectName) {
+            if (confirm(`Delete subject "${subjectName}"? This won't remove it from existing tasks.`)) {
+                fetch(`/delete-subject/${subjectName}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            loadSubjects();
+                            calendar.refetchEvents();
+                            loadTasksAndClasses();
+                        }
+                    });
+            }
+        }
+
+        function addSubject() {
+            const name = document.getElementById('subjectName').value;
+            const color = document.getElementById('subjectColor').value;
+            
+            if (!name) {
+                alert('Please enter a subject name');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('color', color);
+            
+            fetch('/add-subject', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadSubjects();
+                    document.getElementById('subjectName').value = '';
+                    calendar.refetchEvents();
+                    loadTasksAndClasses();
+                }
+            });
+        }
+
+        // Modal functions
+        function openTaskModal() {
+            document.getElementById('taskModal').style.display = 'block';
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('taskDate').value = today;
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').style.display = 'none';
+            document.getElementById('taskForm').reset();
+        }
+
+        function openClassModal() {
+            document.getElementById('classModal').style.display = 'block';
+        }
+
+        function closeClassModal() {
+            document.getElementById('classModal').style.display = 'none';
+            document.getElementById('classForm').reset();
+        }
+
+        function openSubjectModal() {
+            document.getElementById('subjectModal').style.display = 'block';
+            loadSubjects();
+        }
+
+        function closeSubjectModal() {
+            document.getElementById('subjectModal').style.display = 'none';
+            document.getElementById('subjectForm').reset();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const taskModal = document.getElementById('taskModal');
+            const classModal = document.getElementById('classModal');
+            const subjectModal = document.getElementById('subjectModal');
+            
+            if (event.target == taskModal) {
+                closeTaskModal();
+            }
+            if (event.target == classModal) {
+                closeClassModal();
+            }
+            if (event.target == subjectModal) {
+                closeSubjectModal();
+            }
+        }
+
+        // Handle form submissions
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('/add-task', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeTaskModal();
+                    calendar.refetchEvents();
+                    loadTasksAndClasses();
+                } else {
+                    alert('Error adding task');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding task:', error);
+                alert('Error adding task');
+            });
+        });
+
+        document.getElementById('classForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('/add-class', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeClassModal();
+                    calendar.refetchEvents();
+                    loadTasksAndClasses();
+                } else {
+                    alert('Error adding class');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding class:', error);
+                alert('Error adding class');
+            });
+        });
+    </script>
+    <!-- Task and Class Lists -->
+    <h2>Tasks</h2>
+    <ul id="tasks-list">
+        {% for task in tasks %}
+        <li data-id="{{ task.id }}">
+            <span class="task-name">{{ task.name }}</span>
+            <button onclick="editTask({ task,id })">Edit</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Classes</h2>
+    <ul id="classes-list">
+        {% for cls in classes %}
+        <li data-id="{{ cls.id }}">
+            <span class="class-name">{{ cls.name }}</span>
+            <button onclick="editClass({ cls, id })">Edit</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- JavaScript for editing -->
+    <script>
+    function editTask(id) {
+        const li = document.querySelector(`#tasks-list li[data-id='${id}']`);
+        const span = li.querySelector('.task-name');
+
+        const newName = prompt("Enter new task name:", span.textContent);
+        if (newName && newName.trim() !== "") {
+            fetch('/edit_task', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id: id, name: newName})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    span.textContent = newName;
+                } else {
+                    alert('Error updating task');
+                }
+            });
+        }
+    }
+
+    function editClass(id) {
+        const li = document.querySelector(`#classes-list li[data-id='${id}']`);
+        const span = li.querySelector('.class-name');
+
+        const newName = prompt("Enter new class name:", span.textContent);
+        if (newName && newName.trim() !== "") {
+            fetch('/edit_class', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id: id, name: newName})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    span.textContent = newName;
+                } else {
+                    alert('Error updating class');
+                }
+            });
+        }
+    }
+    </script>
+
+</body>
+</html>

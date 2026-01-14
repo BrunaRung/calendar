@@ -1,0 +1,61 @@
+{
+  "tasks": [
+    {
+      "id": "task_1749665614",
+      "title": "IA - app",
+      "start": "2025-06-13",
+      "subject": "computer science hl",
+      "type": "task",
+      "allDay": true,
+      "backgroundColor": "#4f4f4f",
+      "borderColor": "#4f4f4f"
+    }
+  ],
+  "classes": [
+    {
+      "id": "class_1749665764",
+      "title": "english b hl",
+      "daysOfWeek": [
+        3
+      ],
+      "startTime": "08:00",
+      "endTime": "10:00",
+      "subject": "english b hl",
+      "day": "Wednesday",
+      "type": "class",
+      "backgroundColor": "#fffb85",
+      "borderColor": "#fffb85"
+    },
+    {
+      "id": "class_1749665787",
+      "title": "computer science hl",
+      "daysOfWeek": [
+        3
+      ],
+      "startTime": "11:15",
+      "endTime": "12:15",
+      "subject": "computer science hl",
+      "day": "Wednesday",
+      "type": "class",
+      "backgroundColor": "#4f4f4f",
+      "borderColor": "#4f4f4f"
+    }
+  ],
+  "subjects": {
+    "physics sl": {
+      "color": "#c1a2fb"
+    },
+    "computer science hl": {
+      "color": "#4f4f4f"
+    },
+    "english b hl": {
+      "color": "#fffb85"
+    },
+    "math aa hl": {
+      "color": "#a6a6a6"
+    },
+    "portuguese a sl": {
+      "color": "#fd4d26"
+    }
+  }
+}

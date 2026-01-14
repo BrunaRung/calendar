@@ -1,0 +1,51 @@
+💡 Project Idea
+This project is a simple web-based calendar application designed to help IB students plan their study sessions and classes efficiently. Users can input their school classes (e.g., Math HL, Chemistry SL) and create tasks (e.g., "Study for Psychology IA") with due dates. The app then displays this information in a clean, weekly calendar layout. The goal is to improve students' time management by combining class schedules and task planning into one intuitive interface. The interface will be built using basic HTML and CSS for structure and style, with JavaScript or Python (via Flask) used to handle logic and data.
+
+📅 Schedule by Date
+May 9th (Day 1) – Define and Plan (1.5 hrs)
+    Write problem definition and scope
+    Outline features and sketch UI layout
+May 10th (Day 2) – Data Structures & UI Plan (1.5 hrs)
+    Choose data storage method (e.g., JSON)
+    Plan core functions (add_task, view_calendar, etc.)
+May 11th (Day 3) – Task Input Form (1.5 hrs)
+    Code input for task (title, subject, due date)
+    Test input and storage
+May 12th (Day 4) – Class Input Form (1.5 hrs)
+    Code input for classes (subject, weekday, start/end time)
+    Test input and storage
+May 13th (Day 5) – Data Storage Implementation (1.5 hrs)
+    Store/load data using chosen format
+May 14–16 (Days 6–8) – Write Criterion A: Planning (3 hrs)
+    Describe the problem, the plan, and rationale
+May 17–19 (Days 9–11) – Calendar Output (3 hrs)
+    Create calendar grid layout
+    Display classes and tasks for each day
+May 20–21 (Days 12–13) – Task Assignment (2 hrs)
+    Implement assigning tasks to days/times
+May 22–24 (Days 14–16) – Refine UI & Layout (2 hrs)
+    Polish appearance, labels, spacing
+May 25–27 (Days 17–19) – Write Criterion B: Design (3 hrs)
+    Describe structure, flow, UI mockups
+May 28–31 (Days 20–23) – Test Features (3 hrs)
+    Try edge cases, fix bugs
+June 1–3 (Days 24–26) – Polish UI & Final Testing (3 hrs)
+    Final tweaks and polish
+June 4–6 (Days 27–29) – Write Criterion C: Development (3 hrs)
+    Explain your development process and challenges
+June 7–9 (Days 30–32) – Write Criterion D: Testing/Evaluation (3 hrs)
+    Record test results, explain outcomes, create user guide
+June 10–11 (Days 33–34) – Final Revisions (2 hrs)
+    Refine all documents and code
+June 12 (Day 35) – Final Check & Submission Prep (1 hr)
+    Review and organize submission materials
+June 13 (Day 36) – Submit IA! (0.5 hr)
+
+🕒 Total Time Allocation
+Planning & Design: ~6–8 hrs
+Programming: ~12–15 hrs
+Testing & Debugging: ~4–5 hrs
+Documentation: ~8–10 hrs
+Video/Demo: ~1–2 hrs
+
+Estimated Total: ~35–40 hours

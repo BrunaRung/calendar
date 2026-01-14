@@ -1,0 +1,220 @@
+body {
+    background-color: black;
+    color: white;
+    font-family: 'Playfair Display', serif;
+    margin: 0;
+    padding: 0;
+} 
+    
+#calendar {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    overflow: auto; 
+    border: 1px solid #333;
+    border-radius: 10px;
+}
+
+.list_grid {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 15px;
+    overflow-y: auto;
+    max-height: 600px;
+}
+
+.list_grid h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+#list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+#list li {
+    background-color: #333;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-info {
+    flex-grow: 1;
+}
+
+.task-subject {
+    font-size: 0.8em;
+    color: #888;
+    font-family: "Playfair Display";
+}
+
+.delete-btn {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 8px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.delete-btn:hover {
+    background-color: #cc0000;
+}
+
+.btn {
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 10px;
+    height: 50px;
+    width: 100px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.btn:hover {
+    background-color: #f0f0f0;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #333;
+    border-radius: 10px;
+    width: 400px;
+    color: white;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: white;
+}
+
+.form-group {
+    margin: 15px 0;
+    font-family: "Playfair Display";
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    box-sizing: border-box;
+    font-family: "Playfair Display";
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #4fc3f7;
+}
+
+.submit-btn {
+    background-color: #4fc3f7;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+.submit-btn:hover {
+    background-color: #29b6f6;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+    border: 1px solid #333;
+}
+
+.fc-theme-standard td, .fc-theme-standard th {
+    border-color: #333;
+}
+
+.fc-col-header-cell {
+    background-color: #1a1a1a !important;
+    color: white !important;
+}
+
+.fc-daygrid-day {
+    background-color: #2a2a2a !important;
+}
+
+.fc-day-today {
+    background-color: #3a3a3a !important;
+}
+
+.fc-button-primary {
+    background-color: #4fc3f7 !important;
+    border-color: #4fc3f7 !important;
+}
+
+.fc-button-primary:hover {
+    background-color: #29b6f6 !important;
+    border-color: #29b6f6 !important;
+}
+
+.subject-color-preview {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin-right: 10px;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+
+.subject-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    margin: 5px 0;
+    background-color: #333;
+    border-radius: 5px;
+}
+
+.subject-item-name {
+    flex-grow: 1;
+}
+
+.modal-content h3 {
+    margin-top: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
